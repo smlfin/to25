@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domestic Toppers</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+</head>
+<body>
+
+    <header>
+        <nav class="navigation">
+            <a href="index.html">Home</a>
+            <a href="domestic.html" class="active">Domestic</a>
+            <a href="international.html">International</a>
+        </nav>
+        <h1>Top 25 Domestic Performers</h1>
+    </header>
+
+    <main>
+        <div id="loading-indicator">
+            <p>Loading data...</p>
+        </div>
+        
+        <section class="podium-section">
+            <div class="podium-slot silver">
+                <div class="podium-content">
+                    <span class="rank">2</span>
+                    <span class="name"></span>
+                    <span class="metric"></span>
+                </div>
+            </div>
+            <div class="podium-slot gold">
+                <div class="podium-content">
+                    <span class="rank">1</span>
+                    <span class="name"></span>
+                    <span class="metric"></span>
+                </div>
+            </div>
+            <div class="podium-slot bronze">
+                <div class="podium-content">
+                    <span class="rank">3</span>
+                    <span class="name"></span>
+                    <span class="metric"></span>
+                </div>
+            </div>
+        </section>
+
+        <section class="leaderboard-section">
+            </section>
+    </main>
+
+    <div id="details-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div id="modal-details">
+                </div>
+        </div>
+    </div>
+
+    <script src="domestic_script.js"></script>
+</body>
+</html>

@@ -1,0 +1,387 @@
+/* Color variables */
+:root {
+    --bg-color: #1a1a2e;
+    --card-bg-color: #2b2b4d;
+    --text-color: #e0e0e0;
+    --gold: #FFD700;
+    --silver: #C0C0C0;
+    --bronze: #CD7F32;
+    --accent-color: #FF5733; /* A bright orange for highlights */
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Home Page Specific Styles */
+.landing-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+}
+
+.landing-title {
+    font-size: 4em;
+    margin-bottom: 0.5rem;
+    color: var(--accent-color);
+    text-shadow: 0 0 10px rgba(255, 87, 51, 0.5);
+    animation: fadeIn 2s ease-in-out;
+}
+
+.landing-tagline {
+    font-size: 1.5em;
+    margin-bottom: 3rem;
+    color: var(--text-color);
+    animation: fadeIn 3s ease-in-out;
+}
+
+.button-group {
+    display: flex;
+    gap: 2rem;
+    animation: fadeIn 4s ease-in-out;
+}
+
+.button-group a {
+    padding: 1.5rem 3rem;
+    background-color: var(--card-bg-color);
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 1.5rem;
+    border-radius: 10px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.button-group a:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* General Header and Navigation */
+header {
+    text-align: center;
+    padding: 2rem;
+    border-bottom: 1px solid #444;
+}
+
+header h1 {
+    margin-bottom: 1rem;
+    font-size: 2em;
+}
+
+.navigation {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.navigation a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 1.1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.navigation a:hover {
+    background-color: var(--card-bg-color);
+}
+
+.navigation a.active {
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+    font-weight: bold;
+}
+
+
+.team-selector button {
+    background-color: transparent;
+    color: var(--text-color);
+    border: 1px solid var(--accent-color);
+    padding: 0.75rem 1.5rem;
+    margin: 0 0.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.team-selector button.active {
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+}
+
+.team-selector button:hover {
+    background-color: var(--accent-color);
+    color: var(--bg-color);
+}
+
+/* Main Content */
+main {
+    padding: 2rem;
+}
+
+/* Loading Indicator Style */
+#loading-indicator {
+    text-align: center;
+    font-size: 1.5rem;
+    color: var(--accent-color);
+    padding: 5rem 0;
+}
+
+/* Initially hide these sections to prevent a flash of empty content */
+.podium-section, .leaderboard-section {
+    display: none;
+}
+
+/* Podium Section */
+.podium-section {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.podium-slot {
+    background-color: var(--card-bg-color);
+    border-radius: 10px 10px 0 0;
+    color: var(--text-color);
+    text-align: center;
+    width: 150px;
+    padding-top: 1rem;
+    position: relative;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.podium-content {
+    padding: 1rem;
+}
+
+.podium-slot.gold {
+    height: 200px;
+    background-color: var(--gold);
+    color: #000;
+}
+
+.podium-slot.silver {
+    height: 160px;
+    background-color: var(--silver);
+    color: #000;
+}
+
+.podium-slot.bronze {
+    height: 120px;
+    background-color: var(--bronze);
+    color: #000;
+}
+
+.podium-slot .rank {
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.podium-slot .name {
+    font-size: 1rem;
+    display: block;
+    margin-bottom: 0.2rem;
+}
+
+.podium-slot .metric {
+    font-size: 0.9rem;
+    display: block;
+}
+
+/* Main Leaderboard Cards */
+.leaderboard-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.card {
+    background-color: var(--card-bg-color);
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 10px 10px 20px rgba(0,0,0,0.2);
+}
+
+.card .rank {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--accent-color);
+    margin-bottom: 0.5rem;
+}
+
+.card .name {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.card .outstanding {
+    font-style: italic;
+    color: #aaa;
+    margin-bottom: 0.5rem;
+}
+
+.card .metric {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+/* Modal Styling */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.7);
+}
+
+.modal-content {
+    background-color: var(--bg-color);
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 10px;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: var(--text-color);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#modal-details h2 {
+    color: var(--accent-color);
+    margin-top: 0;
+}
+
+#modal-details p {
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+}
+
+.modal-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    text-align: center;
+}
+
+.detail-box {
+    padding: 1rem;
+    background-color: #35355a;
+    border-radius: 8px;
+}
+
+.detail-box h4 {
+    margin: 0 0 0.5rem 0;
+    color: var(--accent-color);
+}
+
+.detail-box .value {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .landing-title {
+        font-size: 2.5em;
+    }
+    .landing-tagline {
+        font-size: 1.2em;
+    }
+    .button-group {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .button-group a {
+        width: 100%;
+    }
+    .navigation {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .podium-section {
+        flex-direction: column;
+        align-items: center;
+        height: auto;
+    }
+    /* Correcting the podium order for mobile */
+    .podium-slot.gold { order: 1; height: 180px; }
+    .podium-slot.silver { order: 2; height: 140px; }
+    .podium-slot.bronze { order: 3; height: 100px; }
+
+    .podium-slot {
+        width: 80%;
+        margin: 1rem 0;
+    }
+
+    .podium-slot.gold .podium-content,
+    .podium-slot.silver .podium-content,
+    .podium-slot.bronze .podium-content {
+        padding-top: 0.5rem;
+    }
+
+    .leaderboard-section {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    header h1 {
+        font-size: 1.75em;
+    }
+    .modal-content {
+        margin: 20% auto;
+        width: 90%;
+    }
+    .modal-details-grid {
+        grid-template-columns: 1fr;
+    }
+}
