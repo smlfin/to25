@@ -73,20 +73,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function sortData(data) {
         return data.sort((a, b) => {
-            const valA = parseFloat(a['Ach Net Growth %'].replace('%', '')) || 0;
-            const valB = parseFloat(b['Ach Net Growth %'].replace('%', '')) || 0;
+            const valA = parseFloat(a['Net Growth Achievement'].replace(/,/g, '')) || 0;
+            const valB = parseFloat(b['Net Growth Achievement'].replace(/,/g, '')) || 0;
             return valB - valA;
         });
     }
 
     function renderPodium(topPerformers) {
-        podiumSlots.forEach(slot => {
-            const rank = parseInt(slot.querySelector('.rank').textContent) || 0;
-            const performer = topPerformers.find(p => parseInt(p['SL No']) === rank);
+        const goldSlot = document.querySelector('.podium-slot.gold');
+        const silverSlot = document.querySelector('.podium-slot.silver');
+        const bronzeSlot = document.querySelector('.podium-slot.bronze');
+    
+        const updateSlot = (slot, performer, rank) => {
             const rankSpan = slot.querySelector('.rank');
             const nameSpan = slot.querySelector('.name');
             const metricSpan = slot.querySelector('.metric');
-
+    
             if (performer) {
                 const achievementValue = parseFloat(performer['Net Growth Achievement'].replace(/,/g, '')) || 0;
                 rankSpan.textContent = `Rank ${rank}`;
@@ -98,7 +100,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 nameSpan.textContent = '';
                 metricSpan.textContent = '';
             }
-        });
+        };
+    
+        updateSlot(goldSlot, topPerformers[0], 1);
+        updateSlot(silverSlot, topPerformers[1], 2);
+        updateSlot(bronzeSlot, topPerformers[2], 3);
     }
 
     function renderCards(performers) {
