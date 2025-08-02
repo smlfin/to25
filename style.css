@@ -7,6 +7,7 @@
     --silver: #C0C0C0;
     --bronze: #CD7F32;
     --accent-color: #FF5733; /* A bright orange for highlights */
+    --card-glow-color: #FF8C66; /* A softer orange for card glow */
 }
 
 body {
@@ -17,7 +18,32 @@ body {
     padding: 0;
 }
 
-/* Home Page Specific Styles */
+/* Home Page Specific Styles (Flight Theme) */
+body.flight-theme {
+    background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+    animation: move-background 120s linear infinite;
+    background-size: cover;
+    background-position: center;
+}
+
+@keyframes move-background {
+    from { background-position: 0 0; }
+    to { background-position: 100% 100%; }
+}
+
+/* Position Page Specific Styles (Dynamic Background) */
+body.position-dynamic-bg {
+    background-image: linear-gradient(rgba(26, 26, 46, 0.8), rgba(26, 26, 46, 0.8)), url('https://www.transparenttextures.com/patterns/stardust.png');
+    background-size: cover;
+    background-position: center;
+    animation: pulse-bg 10s ease-in-out infinite alternate;
+}
+
+@keyframes pulse-bg {
+    from { background-color: var(--bg-color); }
+    to { background-color: #1a1a3e; }
+}
+
 .landing-container {
     display: flex;
     flex-direction: column;
@@ -25,6 +51,8 @@ body {
     align-items: center;
     height: 100vh;
     text-align: center;
+    background-color: rgba(26, 26, 46, 0.7);
+    backdrop-filter: blur(5px);
 }
 
 .landing-title {
@@ -63,7 +91,7 @@ body {
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
 }
 
-/* General Header and Navigation */
+/* General Header and Navigation (for all pages) */
 header {
     text-align: center;
     padding: 2rem;
@@ -100,7 +128,6 @@ header h1 {
     color: var(--bg-color);
     font-weight: bold;
 }
-
 
 .team-selector button {
     background-color: transparent;
@@ -149,6 +176,7 @@ main {
     align-items: flex-end;
     gap: 2rem;
     margin-bottom: 2rem;
+    perspective: 1000px;
 }
 
 .podium-slot {
@@ -160,8 +188,14 @@ main {
     padding-top: 1rem;
     position: relative;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
     cursor: pointer;
+}
+
+.podium-slot:hover, .podium-slot:active {
+    transform: translateY(-20px) scale(1.1);
+    box-shadow: 0 25px 40px rgba(0, 0, 0, 0.5);
+    filter: drop-shadow(0 0 10px var(--accent-color));
 }
 
 .podium-content {
@@ -186,29 +220,35 @@ main {
     color: #000;
 }
 
-.podium-slot .rank {
+.podium-slot .podium-rank,
+.podium-slot .podium-name,
+.podium-slot .podium-achievement {
+    margin-bottom: 0.8rem; /* Increased spacing */
+}
+
+.podium-slot .podium-rank {
     font-size: 1.2rem;
     font-weight: bold;
     display: block;
-    margin-bottom: 0.5rem;
 }
 
-.podium-slot .name {
+.podium-slot .podium-name {
     font-size: 1rem;
     display: block;
-    margin-bottom: 0.2rem;
 }
 
-.podium-slot .metric {
+.podium-slot .podium-achievement {
     font-size: 0.9rem;
     display: block;
 }
+
 
 /* Main Leaderboard Cards */
 .leaderboard-section {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1rem;
+    perspective: 1000px;
 }
 
 .card {
@@ -216,25 +256,31 @@ main {
     border-radius: 10px;
     padding: 1.5rem;
     text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
     cursor: pointer;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 10px 10px 20px rgba(0,0,0,0.2);
+.card:hover, .card:active {
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.5);
+    filter: drop-shadow(0 0 10px var(--accent-color));
+}
+
+.card .rank,
+.card .name,
+.card .metric {
+    line-height: 1.5; /* Loosen up the spacing */
+    display: block;
 }
 
 .card .rank {
     font-size: 1.2rem;
     font-weight: bold;
     color: var(--accent-color);
-    margin-bottom: 0.5rem;
 }
 
 .card .name {
     font-size: 1rem;
-    margin-bottom: 0.75rem;
 }
 
 .card .outstanding {
@@ -246,6 +292,111 @@ main {
 .card .metric {
     font-size: 1rem;
     font-weight: bold;
+}
+
+/* --- Know Your Position Page Styles --- */
+.position-finder-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 2rem;
+    background-color: var(--card-bg-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: var(--accent-color);
+}
+
+.form-group select, .form-group input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: 2px solid #555;
+    border-radius: 5px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: border-color 0.3s, box-shadow 0.3s;
+    box-sizing: border-box;
+}
+
+.form-group select:focus, .form-group input[type="text"]:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 5px rgba(255, 87, 51, 0.5);
+    outline: none;
+}
+
+.autocomplete-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    background: var(--card-bg-color);
+    border: 1px solid #444;
+    border-top: none;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    z-index: 10;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 0 0 5px 5px;
+}
+
+.autocomplete-list li {
+    padding: 10px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #333;
+    font-size: 1rem;
+}
+
+.autocomplete-list li:last-child {
+    border-bottom: none;
+}
+
+.autocomplete-list li:hover {
+    background-color: #35355a;
+}
+
+button {
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--bg-color);
+    background-color: var(--accent-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+button:hover {
+    background-color: #e54d2e;
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
 }
 
 /* Modal Styling */
@@ -292,6 +443,13 @@ main {
     margin-top: 0;
 }
 
+#modal-details h3 {
+    color: var(--accent-color);
+    margin-top: 1.5rem;
+    border-bottom: 1px solid #444;
+    padding-bottom: 0.5rem;
+}
+
 #modal-details p {
     margin-bottom: 0.75rem;
     line-height: 1.6;
@@ -299,7 +457,7 @@ main {
 
 .modal-details-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 1rem;
     text-align: center;
 }
@@ -308,16 +466,56 @@ main {
     padding: 1rem;
     background-color: #35355a;
     border-radius: 8px;
+    position: relative;
 }
 
 .detail-box h4 {
     margin: 0 0 0.5rem 0;
     color: var(--accent-color);
+    cursor: pointer;
 }
 
 .detail-box .value {
     font-size: 1.2rem;
     font-weight: bold;
+}
+
+/* Tooltip Styles */
+[data-tooltip]:before {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100%);
+    background-color: var(--card-bg-color);
+    color: var(--text-color);
+    padding: 8px 12px;
+    border-radius: 5px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    font-size: 0.8rem;
+    z-index: 100;
+}
+
+[data-tooltip]:hover:before {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Metric Icons */
+.metric-icon {
+    font-size: 1rem;
+    margin-left: 5px;
+}
+
+.icon-check {
+    color: #28a745; /* Green */
+}
+
+.icon-cross {
+    color: #dc3545; /* Red */
 }
 
 /* Animations */
@@ -383,5 +581,10 @@ main {
     }
     .modal-details-grid {
         grid-template-columns: 1fr;
+    }
+    [data-tooltip]:before {
+        top: unset;
+        bottom: -5px;
+        transform: translateX(-50%) translateY(100%);
     }
 }
