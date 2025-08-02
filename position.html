@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Know Your Position</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+</head>
+<body>
+
+    <header>
+        <nav class="navigation">
+            <a href="index.html">Home</a>
+            <a href="domestic.html">Domestic</a>
+            <a href="international.html">International</a>
+            <a href="position.html" class="active">Know Your Position</a>
+        </nav>
+        <h1>Know Your Position</h1>
+    </header>
+
+    <main>
+        <div id="loading-indicator">
+            <p>Loading data...</p>
+        </div>
+        <section class="position-finder-section" style="display: none;">
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="company-select">Select Company:</label>
+                    <select id="company-select" disabled>
+                        <option value="">-- Select a company --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="staff-name-input">Enter Staff Name:</label>
+                    <input type="text" id="staff-name-input" placeholder="Start typing staff name..." disabled>
+                    <ul id="staff-suggestions" class="autocomplete-list"></ul>
+                </div>
+                <button id="show-details-btn" disabled>Show Details</button>
+            </div>
+        </section>
+    </main>
+
+    <div id="details-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div id="modal-details">
+                </div>
+        </div>
+    </div>
+
+    <script src="position_script.js"></script>
+</body>
+</html>
