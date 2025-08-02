@@ -8,14 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeBtn = document.querySelector('.close-btn');
 
     let allData = [];
-
-    const companyAbbreviations = {
-        'SML FINANCE LTD': 'SML',
-        'VANCHINAD FINANCE LTD': 'VFL',
-        'SANGEETH NIDHI LTD': 'SNL'
-    };
-
-    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTlys14AiGHJNcXDBF-7tgiPZhIPN4Kl90Ml5ua9QMivwQz0_8ykgI-jo8fB3c9TZnUrMjF2Xfa3FO5/pub?gid=488762022&single=true&output=csv';
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTlys14AiGHJNcXDBF-7tgiPZhIPN4Kl90Ml5ua9QMivwQz0_8ykgI-jo8fB3c9TZnUrMjF2Xfa3FO5/pub?gid=439106858&single=true&output=csv';
 
     async function fetchData(url) {
         try {
@@ -71,137 +64,225 @@ document.addEventListener('DOMContentLoaded', () => {
         return data;
     }
 
+    function getNumericValue(value) {
+        if (value === null || value === undefined) {
+            return 0;
+        }
+        const strValue = String(value);
+        const num = parseFloat(strValue.replace(/,/g, ''));
+        return isNaN(num) ? 0 : num;
+    }
+    
+    function getPercentage(achievement, target) {
+        if (getNumericValue(target) === 0) {
+            return 0;
+        }
+        return (getNumericValue(achievement) / getNumericValue(target)) * 100;
+    }
+
     function sortData(data) {
         return data.sort((a, b) => {
-            const valA = parseFloat(a['Net Growth Achievement'].replace(/,/g, '')) || 0;
-            const valB = parseFloat(b['Net Growth Achievement'].replace(/,/g, '')) || 0;
-            return valB - valA;
+            const achievementA = getNumericValue(a['Contest Total NET']);
+            const targetA = getNumericValue(a['Foreign trip contest Target']);
+            const percentageA = getPercentage(achievementA, targetA);
+    
+            const achievementB = getNumericValue(b['Contest Total NET']);
+            const targetB = getNumericValue(b['Foreign trip contest Target']);
+            const percentageB = getPercentage(achievementB, targetB);
+    
+            return percentageB - percentageA;
         });
     }
 
-    function renderPodium(topPerformers) {
-        const goldSlot = document.querySelector('.podium-slot.gold');
-        const silverSlot = document.querySelector('.podium-slot.silver');
-        const bronzeSlot = document.querySelector('.podium-slot.bronze');
-    
-        const updateSlot = (slot, performer, rank) => {
-            const rankSpan = slot.querySelector('.rank');
-            const nameSpan = slot.querySelector('.name');
-            const metricSpan = slot.querySelector('.metric');
-    
-            if (performer) {
-                const achievementValue = parseFloat(performer['Net Growth Achievement'].replace(/,/g, '')) || 0;
-                rankSpan.textContent = `Rank ${rank}`;
-                nameSpan.textContent = `${performer['Staff Name']} (${companyAbbreviations[performer['Company']] || performer['Company']})`;
-                metricSpan.textContent = `Achievement: ${achievementValue.toLocaleString('en-IN')} (${performer['Ach Net Growth %']})`;
-                slot.addEventListener('click', () => showDetailsModal(performer));
-            } else {
-                rankSpan.textContent = `Rank ${rank}`;
-                nameSpan.textContent = '';
-                metricSpan.textContent = '';
-            }
-        };
-    
-        updateSlot(goldSlot, topPerformers[0], 1);
-        updateSlot(silverSlot, topPerformers[1], 2);
-        updateSlot(bronzeSlot, topPerformers[2], 3);
+    function getShortCompanyName(companyName) {
+        switch (companyName) {
+            case 'VANCHINAD FINANCE LTD':
+                return 'VFL';
+            case 'SML FINANCE LTD':
+                return 'SML';
+            case 'SANGEETH NIDHI LTD':
+                return 'SNL';
+            default:
+                return companyName;
+        }
     }
 
-    function renderCards(performers) {
+    function createPodium(topPerformers) {
+        const ranks = [
+            null, // for left slot
+            null, // for middle slot
+            null // for right slot
+        ];
+        
+        // Correctly populate the ranks array based on podium order: Rank 2, Rank 1, Rank 3
+        if (topPerformers[1]) ranks[0] = topPerformers[1]; // Rank 2 goes to the left podium slot
+        if (topPerformers[0]) ranks[1] = topPerformers[0]; // Rank 1 goes to the middle podium slot
+        if (topPerformers[2]) ranks[2] = topPerformers[2]; // Rank 3 goes to the right podium slot
+
+        podiumSlots.forEach((slot, index) => {
+            const user = ranks[index];
+            if (user) {
+                const rank = allData.findIndex(p => p === user) + 1;
+                const achievement = getNumericValue(user['Contest Total NET']);
+                const target = getNumericValue(user['Foreign trip contest Target']);
+                const percentage = getPercentage(achievement, target);
+                const shortCompanyName = getShortCompanyName(user['COMPANY NAME']);
+                
+                slot.innerHTML = `
+                    <div class="podium-rank">Rank ${rank}</div>
+                    <div class="podium-name">${user['STAFF NAME']} (${shortCompanyName})</div>
+                    <div class="podium-achievement">Achievement: ${getFormattedValue(user['Contest Total NET'])} (${percentage.toFixed(2)}%)</div>
+                `;
+
+                // Add click listener to open modal
+                slot.addEventListener('click', () => {
+                    showDetailsModal(user, rank);
+                });
+            } else {
+                slot.style.display = 'none';
+            }
+        });
+        podiumSection.style.display = 'flex';
+    }
+
+
+    function createLeaderboard(remainingPerformers) {
         leaderboardSection.innerHTML = '';
-        performers.forEach(performer => {
+        remainingPerformers.forEach((user) => {
+            const rank = allData.findIndex(p => p === user) + 1;
+            const achievement = getNumericValue(user['Contest Total NET']);
+            const target = getNumericValue(user['Foreign trip contest Target']);
+            const percentage = getPercentage(achievement, target);
+            const shortCompanyName = getShortCompanyName(user['COMPANY NAME']);
+
             const card = document.createElement('div');
-            card.classList.add('card');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="tile-content">
+                    <span class="rank">Rank ${rank}</span>
+                    <span class="name">${user['STAFF NAME']} (${shortCompanyName})</span>
+                    <span class="metric">Achievement: ${getFormattedValue(user['Contest Total NET'])} (${percentage.toFixed(2)}%)</span>
+                </div>
+            `;
 
-            const rank = document.createElement('div');
-            rank.classList.add('rank');
-            rank.textContent = `Rank ${performer['SL No']}`;
-
-            const name = document.createElement('div');
-            name.classList.add('name');
-            name.textContent = `${performer['Staff Name']} (${companyAbbreviations[performer['Company']] || performer['Company']})`;
-
-            const achievementValue = parseFloat(performer['Net Growth Achievement'].replace(/,/g, '')) || 0;
-            const metric = document.createElement('div');
-            metric.classList.add('metric');
-            metric.textContent = `Achievement: ${achievementValue.toLocaleString('en-IN')} (${performer['Ach Net Growth %']})`;
-
-            card.appendChild(rank);
-            card.appendChild(name);
-            card.appendChild(metric);
-
-            card.addEventListener('click', () => showDetailsModal(performer));
-
+            // Add click listener to open modal
+            card.addEventListener('click', () => {
+                showDetailsModal(user, rank);
+            });
             leaderboardSection.appendChild(card);
         });
-    }
-
-    function displayGlobalData() {
-        const sortedData = sortData(allData).slice(0, 25);
-
-        sortedData.forEach((item, index) => {
-            item['SL No'] = (index + 1).toString();
-        });
-
-        const top3 = sortedData.slice(0, 3);
-        const remaining = sortedData.slice(3);
-
-        renderPodium(top3);
-        renderCards(remaining);
-
-        loadingIndicator.style.display = 'none';
-        podiumSection.style.display = 'flex';
         leaderboardSection.style.display = 'grid';
     }
 
-    function showDetailsModal(data) {
-        const growthTarget = parseFloat(data['International Trip Amount Target'].replace(/,/g, '')) || 0;
-        const growthAchievement = parseFloat(data['Net Growth Achievement'].replace(/,/g, '')) || 0;
-        const growthShortfall = (growthTarget - growthAchievement);
 
-        const freshCustomerTarget = parseFloat(data['International Trip Fresh Customer Target']) || 0;
-        const freshCustomerAchievement = parseFloat(data['Fresh Customer Achievement']) || 0;
-        const freshCustomerShortfall = (freshCustomerTarget - freshCustomerAchievement);
+    function getFormattedValue(value) {
+        if (value === null || value === undefined) {
+            return 'Not Applicable';
+        }
+        const strValue = String(value);
+        const num = parseFloat(strValue.replace(/,/g, ''));
+        if (isNaN(num)) {
+            return value;
+        }
+        return num.toLocaleString('en-IN');
+    }
 
-        modalDetails.innerHTML = `
-            <h2>${data['Staff Name']}</h2>
-            <p><strong>Company:</strong> ${data['Company']}</p>
-            <p><strong>Rank:</strong> ${data['SL No']}</p>
-            <p><strong>Branch:</strong> ${data['Branch']}</p>
-            
-            <h3>International Trip Amount</h3>
+    function getAchievementValue(value) {
+        if (value === null || value === undefined) {
+            return '-';
+        }
+        const strValue = String(value);
+        const num = parseFloat(strValue.replace(/,/g, ''));
+        if (isNaN(num) || num === 0) {
+            return '-';
+        }
+        return num.toLocaleString('en-IN');
+    }
+
+    function showDetailsModal(data, foreignRank) {
+        const outstanding = data['OS AS ON 30.06.2025'] || 'N/A';
+        const modalContent = [];
+        const shortCompanyName = getShortCompanyName(data['COMPANY NAME']);
+
+        modalContent.push(`
+            <h2>${data['STAFF NAME']}</h2>
+            <p><strong>Company:</strong> ${shortCompanyName}</p>
+            <p><strong>Branch:</strong> ${data['BRANCH']}</p>
+            <p><strong>Outstanding:</strong> ${outstanding}</p>
+        `);
+        
+        // Foreign Trip Contest
+        const foreignTripContestTarget = getNumericValue(data['Foreign trip contest Target']);
+        const foreignTripFreshCustomerTarget = getNumericValue(data['Foreign trip fresh customer target']);
+        const foreignTripContestAchievement = getNumericValue(data['Contest Total NET']);
+        const foreignTripFreshCustomerAchievement = getNumericValue(data['FRESH CUSTOMER ACH JULY']);
+
+        const foreignTripContestShortfall = foreignTripContestTarget - foreignTripContestAchievement;
+        const foreignTripFreshCustomerShortfall = foreignTripFreshCustomerTarget - foreignTripFreshCustomerAchievement;
+
+        modalContent.push(`
+            <h3>Foreign Trip Contest</h3>
             <div class="modal-details-grid">
                 <div class="detail-box">
-                    <h4>Target</h4>
-                    <span class="value">${growthTarget.toLocaleString('en-IN')}</span>
+                    <h4 data-tooltip="Total Business and fresh customer targets for the contest period.">Target</h4>
+                    <p>Business: ${getFormattedValue(foreignTripContestTarget)}</p>
+                    <p>Fresh Customers: ${getFormattedValue(foreignTripFreshCustomerTarget)}</p>
                 </div>
                 <div class="detail-box">
-                    <h4>Achievement</h4>
-                    <span class="value">${growthAchievement.toLocaleString('en-IN')} (${data['Ach Net Growth %']})</span>
+                    <h4 data-tooltip="The Business and fresh customer figures achieved.">Achievement</h4>
+                    <p>Business: ${getAchievementValue(foreignTripContestAchievement)}</p>
+                    <p>Fresh Customers: ${getFormattedValue(foreignTripFreshCustomerAchievement)}</p>
                 </div>
                 <div class="detail-box">
-                    <h4>Shortfall</h4>
-                    <span class="value">${growthShortfall.toLocaleString('en-IN')}</span>
+                    <h4 data-tooltip="The shortfall to reach the contest targets.">Shortfall</h4>
+                    <p>Business: ${getFormattedValue(foreignTripContestShortfall)}</p>
+                    <p>Fresh Customers: ${getFormattedValue(foreignTripFreshCustomerShortfall)}</p>
                 </div>
             </div>
+        `);
+    
+        // Domestic Trip Contest
+        const domesticContestTarget = data['Domestic Trip contest target'];
+        const domesticFreshCustomerTarget = data['Domestic Trip fresh customer target'];
+        const isDomesticApplicable = (domesticContestTarget !== '' && domesticContestTarget !== undefined) || (domesticFreshCustomerTarget !== '' && domesticFreshCustomerTarget !== undefined);
 
-            <h3>International Fresh Customer</h3>
-            <div class="modal-details-grid">
-                <div class="detail-box">
-                    <h4>Target</h4>
-                    <span class="value">${freshCustomerTarget.toLocaleString('en-IN')}</span>
+        if (isDomesticApplicable) {
+            const domesticTripContestTarget = getNumericValue(domesticContestTarget);
+            const domesticTripFreshCustomerTarget = getNumericValue(domesticFreshCustomerTarget);
+            const domesticTripContestAchievement = getNumericValue(data['Contest Total NET']);
+            const domesticTripFreshCustomerAchievement = getNumericValue(data['FRESH CUSTOMER ACH JULY']);
+
+            const domesticTripContestShortfall = domesticTripContestTarget - domesticTripContestAchievement;
+            const domesticTripFreshCustomerShortfall = domesticTripFreshCustomerTarget - domesticTripFreshCustomerAchievement;
+
+            modalContent.push(`
+                <h3>Domestic Trip Contest</h3>
+                <div class="modal-details-grid">
+                    <div class="detail-box">
+                        <h4 data-tooltip="The Business and Fresh customer targets for the domestic trip contest.">Target</h4>
+                        <p>Business: ${getFormattedValue(domesticTripContestTarget)}</p>
+                        <p>Fresh Customers: ${getFormattedValue(domesticTripFreshCustomerTarget)}</p>
+                    </div>
+                    <div class="detail-box">
+                        <h4 data-tooltip="The Business and Fresh customer figures achieved for the domestic trip contest.">Achievement</h4>
+                        <p>Business: ${getAchievementValue(domesticTripContestAchievement)}</p>
+                        <p>Fresh Customers: ${getFormattedValue(domesticTripFreshCustomerAchievement)}</p>
+                    </div>
+                    <div class="detail-box">
+                        <h4 data-tooltip="The shortfall to reach the domestic trip targets.">Shortfall</h4>
+                        <p>Business: ${getFormattedValue(domesticTripContestShortfall)}</p>
+                        <p>Fresh Customers: ${getFormattedValue(domesticTripFreshCustomerShortfall)}</p>
+                    </div>
                 </div>
-                <div class="detail-box">
-                    <h4>Achievement</h4>
-                    <span class="value">${freshCustomerAchievement.toLocaleString('en-IN')} (${data['Fresh Customer Achievement %']})</span>
-                </div>
-                <div class="detail-box">
-                    <h4>Shortfall</h4>
-                    <span class="value">${freshCustomerShortfall.toLocaleString('en-IN')}</span>
-                </div>
-            </div>
-            <p><strong>Outstanding:</strong> ${data['Outstanding']}</p>
-        `;
+            `);
+        } else {
+            modalContent.push(`
+                <h3>Domestic Trip</h3>
+                <p>Not Applicable</p>
+            `);
+        }
+
+        modalDetails.innerHTML = modalContent.join('');
         modal.style.display = 'block';
     }
 
@@ -218,7 +299,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     fetchData(csvUrl).then(data => {
-        allData = data;
-        displayGlobalData();
+        allData = data.filter(item => getNumericValue(item['Domestic Trip contest target']) > 0 || getNumericValue(item['Foreign trip contest Target']) > 0);
+        const sortedData = sortData(allData);
+        const topPerformers = sortedData.slice(0, 3);
+        const remainingPerformers = sortedData.slice(3, 25);
+        createPodium(topPerformers);
+        createLeaderboard(remainingPerformers);
+        loadingIndicator.style.display = 'none';
     });
 });
