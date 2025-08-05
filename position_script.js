@@ -124,8 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (value === null || value === undefined || (typeof value === 'string' && value.trim() === '')) {
             return 'Not Applicable';
         }
-        const strValue = String(value); // Ensure value is a string
-        const num = parseFloat(strValue.replace(/,/g, ''));
+        const num = parseFloat(value.replace(/,/g, ''));
         if (isNaN(num)) {
             return value;
         }
@@ -136,8 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (value === null || value === undefined || (typeof value === 'string' && value.trim() === '')) {
             return 0;
         }
-        const strValue = String(value); // Ensure value is a string
-        const num = parseFloat(strValue.replace(/,/g, ''));
+        const num = parseFloat(value.replace(/,/g, ''));
         return isNaN(num) ? 0 : num;
     }
 
@@ -145,86 +143,104 @@ document.addEventListener('DOMContentLoaded', () => {
         if (value === null || value === undefined || (typeof value === 'string' && value.trim() === '')) {
             return '-';
         }
-        const strValue = String(value); // Ensure value is a string
-        const num = parseFloat(strValue.replace(/,/g, ''));
+        const num = parseFloat(value.replace(/,/g, ''));
         if (isNaN(num) || num === 0) {
             return '-';
         }
         return num.toLocaleString('en-IN');
     }
 
-    function showDetailsModal(data) {
+    function showDetailsModal(data, foreignRank) {
         const outstanding = data['OS AS ON 30.06.2025'] || 'N/A';
         const modalContent = [];
+        const contestTotalNet = getNumericValue(data['Contest Total NET']);
+        const foreignTripContestTarget = getNumericValue(data['Foreign trip contest Target']);
+        const isForeignTargetMet = contestTotalNet >= foreignTripContestTarget;
+
+        const domesticContestTarget = data['Domestic Trip contest target'];
+        const domesticFreshCustomerTarget = data['Domestic Trip fresh customer target'];
+        const isDomesticApplicable = (domesticContestTarget !== '' && domesticContestTarget !== undefined) || (domesticFreshCustomerTarget !== '' && domesticFreshCustomerTarget !== undefined);
+        const domesticRank = isDomesticApplicable ? allData.filter(item => item['COMPANY NAME'] === data['COMPANY NAME'] && item['Domestic Trip contest target']).sort((a,b) => getNumericValue(b['Contest Total NET']) - getNumericValue(a['Contest Total NET'])).findIndex(item => item['STAFF NAME'] === data['STAFF NAME']) + 1 : 'NA';
+
 
         modalContent.push(`
             <h2>${data['STAFF NAME']}</h2>
             <p><strong>Company:</strong> ${data['COMPANY NAME']}</p>
+            <p><strong>Foreign Trip Rank:</strong> ${foreignRank}</p>
+            <p><strong>Domestic Trip Rank:</strong> ${domesticRank}</p>
             <p><strong>Branch:</strong> ${data['BRANCH']}</p>
             <p><strong>Outstanding:</strong> ${outstanding}</p>
         `);
-        
+
         // Foreign Trip Contest
-        const foreignTripContestTarget = getNumericValue(data['Foreign trip contest Target']);
-        const foreignTripFreshCustomerTarget = getNumericValue(data['Foreign trip fresh customer target']);
         const foreignTripContestAchievement = getNumericValue(data['Contest Total NET']);
-        const foreignTripFreshCustomerAchievement = getNumericValue(data['FRESH CUSTOMER ACH JULY']);
-        
         const foreignTripContestShortfall = foreignTripContestTarget - foreignTripContestAchievement;
-        const foreignTripFreshCustomerShortfall = foreignTripFreshCustomerTarget - foreignTripFreshCustomerAchievement;
+        const foreignTripIcon = isForeignTargetMet ? '<span class="metric-icon icon-check">&#10004;</span>' : '<span class="metric-icon icon-cross">&#10006;</span>';
 
         modalContent.push(`
             <h3>Foreign Trip Contest</h3>
             <div class="modal-details-grid">
                 <div class="detail-box">
-                    <h4 data-tooltip="Total business and fresh customer targets for the contest period.">Target</h4>
-                    <p>Business: ${getFormattedValue(foreignTripContestTarget)}</p>
-                    <p>Fresh Customers: ${getFormattedValue(foreignTripFreshCustomerTarget)}</p>
+                    <h4 data-tooltip="Total sales for the contest period.">Target</h4>
+                    <span class="value">${getFormattedValue(data['Foreign trip contest Target'])}</span>
                 </div>
                 <div class="detail-box">
-                    <h4 data-tooltip="The business and fresh customer figures achieved.">Achievement</h4>
-                    <p>Business: ${getAchievementValue(foreignTripContestAchievement)}</p>
-                    <p>Fresh Customers: ${getFormattedValue(foreignTripFreshCustomerAchievement)}</p>
+                    <h4 data-tooltip="The target amount required to win a foreign trip.">Achievement${foreignTripIcon}</h4>
+                    <span class="value">${getAchievementValue(data['Contest Total NET'])}</span>
                 </div>
                 <div class="detail-box">
-                    <h4 data-tooltip="The shortfall to reach the contest targets.">Shortfall</h4>
-                    <p>Business: ${getFormattedValue(foreignTripContestShortfall)}</p>
-                    <p>Fresh Customers: ${getFormattedValue(foreignTripFreshCustomerShortfall)}</p>
+                    <h4 data-tooltip="The shortfall amount to reach the target.">Shortfall</h4>
+                    <span class="value">${getFormattedValue(foreignTripContestShortfall.toString())}</span>
                 </div>
             </div>
         `);
     
-        // Domestic Trip Contest
-        const domesticContestTarget = data['Domestic Trip contest target'];
-        const domesticFreshCustomerTarget = data['Domestic Trip fresh customer target'];
-        const isDomesticApplicable = (domesticContestTarget !== '' && domesticContestTarget !== undefined) || (domesticFreshCustomerTarget !== '' && domesticFreshCustomerTarget !== undefined);
-
+        // Domestic Trip Contest and Fresh Customer
         if (isDomesticApplicable) {
             const domesticTripContestTarget = getNumericValue(domesticContestTarget);
-            const domesticTripFreshCustomerTarget = getNumericValue(domesticFreshCustomerTarget);
             const domesticTripContestAchievement = getNumericValue(data['Contest Total NET']);
-            const domesticTripFreshCustomerAchievement = getNumericValue(data['FRESH CUSTOMER ACH JULY']);
-
             const domesticTripContestShortfall = domesticTripContestTarget - domesticTripContestAchievement;
-            const domesticTripFreshCustomerShortfall = domesticTripFreshCustomerTarget - domesticTripFreshCustomerAchievement;
+            const isDomesticContestTargetMet = domesticTripContestAchievement >= domesticTripContestTarget;
+            const domesticContestIcon = isDomesticContestTargetMet ? '<span class="metric-icon icon-check">&#10004;</span>' : '<span class="metric-icon icon-cross">&#10006;</span>';
 
             modalContent.push(`
                 <h3>Domestic Trip Contest</h3>
                 <div class="modal-details-grid">
                     <div class="detail-box">
-                        <h4 data-tooltip="The business and fresh customer targets for the domestic trip contest.">Target</h4>
-                        <p>Business: ${getFormattedValue(domesticTripContestTarget)}</p>
-                        <p>Fresh Customers: ${getFormattedValue(domesticTripFreshCustomerTarget)}</p>
+                        <h4 data-tooltip="The target amount for the domestic trip contest.">Target</h4>
+                        <span class="value">${getFormattedValue(domesticContestTarget)}</span>
                     </div>
                     <div class="detail-box">
-                        <h4 data-tooltip="The business and fresh customer figures achieved for the domestic trip contest.">Achievement</h4>
-                        <p>Business: ${getAchievementValue(domesticTripContestAchievement)}</p>
-                        <p>Fresh Customers: ${getFormattedValue(domesticTripFreshCustomerAchievement)}</p>
+                        <h4 data-tooltip="The sales figure achieved for the domestic trip contest.">Achievement${domesticContestIcon}</h4>
+                        <span class="value">${getAchievementValue(data['Contest Total NET'])}</span>
                     </div>
                     <div class="detail-box">
-                        <h4 data-tooltip="The shortfall to reach the domestic trip targets.">Shortfall</h4>
-                        <p>Business: ${getFormattedValue(domesticTripContestShortfall)}</p>
-                        <p>Fresh Customers: ${getFormattedValue(domesticTripFreshCustomerShortfall)}</p>
+                        <h4 data-tooltip="The shortfall amount to reach the domestic trip target.">Shortfall</h4>
+                        <span class="value">${getFormattedValue(domesticTripContestShortfall.toString())}</span>
+                    </div>
+                </div>
+            `);
+
+            const domesticTripFreshCustomerTarget = getNumericValue(domesticFreshCustomerTarget);
+            const domesticTripFreshCustomerAchievement = getNumericValue(data['FRESH CUSTOMER ACH JULY']);
+            const domesticTripFreshCustomerShortfall = domesticTripFreshCustomerTarget - domesticTripFreshCustomerAchievement;
+            const isDomesticFreshCustomerTargetMet = domesticTripFreshCustomerAchievement >= domesticTripFreshCustomerTarget;
+            const domesticFreshCustomerIcon = isDomesticFreshCustomerTargetMet ? '<span class="metric-icon icon-check">&#10004;</span>' : '<span class="metric-icon icon-cross">&#10006;</span>';
+
+            modalContent.push(`
+                <h3>Domestic Trip Fresh Customer</h3>
+                <div class="modal-details-grid">
+                    <div class="detail-box">
+                        <h4 data-tooltip="The number of new customers required for the domestic trip.">Target</h4>
+                        <span class="value">${getFormattedValue(domesticFreshCustomerTarget)}</span>
+                    </div>
+                    <div class="detail-box">
+                        <h4 data-tooltip="The number of fresh customers achieved.">Achievement${domesticFreshCustomerIcon}</h4>
+                        <span class="value">${getFormattedValue(data['FRESH CUSTOMER ACH JULY'])}</span>
+                    </div>
+                    <div class="detail-box">
+                        <h4 data-tooltip="The shortfall in fresh customers to reach the target.">Shortfall</h4>
+                        <span class="value">${getFormattedValue(domesticTripFreshCustomerShortfall.toString())}</span>
                     </div>
                 </div>
             `);
@@ -234,6 +250,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p>Not Applicable</p>
             `);
         }
+
+        // Foreign Trip Fresh Customer
+        const foreignTripFreshCustomerTarget = getNumericValue(data['Foreign trip fresh customer target']);
+        const foreignTripFreshCustomerAchievement = getNumericValue(data['FRESH CUSTOMER ACH JULY']);
+        const foreignTripFreshCustomerShortfall = foreignTripFreshCustomerTarget - foreignTripFreshCustomerAchievement;
+        const isForeignFreshCustomerTargetMet = foreignTripFreshCustomerAchievement >= foreignTripFreshCustomerTarget;
+        const foreignFreshCustomerIcon = isForeignFreshCustomerTargetMet ? '<span class="metric-icon icon-check">&#10004;</span>' : '<span class="metric-icon icon-cross">&#10006;</span>';
+
+        modalContent.push(`
+            <h3>Foreign Trip Fresh Customer</h3>
+            <div class="modal-details-grid">
+                <div class="detail-box">
+                    <h4 data-tooltip="The number of new customers required for the foreign trip.">Target</h4>
+                    <span class="value">${getFormattedValue(data['Foreign trip fresh customer target'])}</span>
+                </div>
+                <div class="detail-box">
+                    <h4 data-tooltip="The number of fresh customers achieved.">Achievement${foreignFreshCustomerIcon}</h4>
+                    <span class="value">${getFormattedValue(data['FRESH CUSTOMER ACH JULY'])}</span>
+                </div>
+                <div class="detail-box">
+                    <h4 data-tooltip="The shortfall in fresh customers to reach the target.">Shortfall</h4>
+                    <span class="value">${getFormattedValue(foreignTripFreshCustomerShortfall.toString())}</span>
+                </div>
+            </div>
+        `);
         
         modalDetails.innerHTML = modalContent.join('');
         modal.style.display = 'block';
@@ -284,7 +325,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (company && staffName) {
             const selectedStaff = findStaffMember(company, staffName);
             if (selectedStaff) {
-                showDetailsModal(selectedStaff);
+                const sortedData = sortData(allData.filter(item => item['COMPANY NAME'] === company));
+                const rank = sortedData.findIndex(item => item['STAFF NAME'] === staffName) + 1;
+                showDetailsModal(selectedStaff, rank);
             }
         }
     });
