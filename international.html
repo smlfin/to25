@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>International Toppers</title>
+    <title>International Ranking</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
 </head>
@@ -16,7 +16,7 @@
             <a href="international.html" class="active">International</a>
             <a href="position.html">Know Your Position</a>
         </nav>
-        <h1>Top 25 International Performers</h1>
+        <h1>International Ranking</h1>
     </header>
 
     <main>
@@ -24,6 +24,27 @@
             <p>Loading data...</p>
         </div>
         
+        <div class="search-widget-container">
+            <button id="toggle-search-btn" class="toggle-search-btn">
+                <i class="fas fa-search"></i> Search
+            </button>
+            <section class="search-filter-section collapsed">
+                <div class="form-container">
+                    <div class="form-group">
+                        <label for="company-filter">Company Name</label>
+                        <select id="company-filter">
+                            <option value="">All Companies</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="staff-search">Search Staff Name</label>
+                        <input type="text" id="staff-search" placeholder="Type a name...">
+                        <ul id="autocomplete-list" class="autocomplete-list"></ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+
         <section class="podium-section">
             <div class="podium-slot silver">
                 <div class="podium-content">
@@ -59,7 +80,7 @@
                 </div>
         </div>
     </div>
-
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script src="international_script.js"></script>
 </body>
 </html>
