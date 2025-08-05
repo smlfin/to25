@@ -166,8 +166,6 @@ document.addEventListener('DOMContentLoaded', () => {
         modalContent.push(`
             <h2>${data['STAFF NAME']}</h2>
             <p><strong>Company:</strong> ${data['COMPANY NAME']}</p>
-            <p><strong>Foreign Trip Rank:</strong> ${foreignRank}</p>
-            <p><strong>Domestic Trip Rank:</strong> ${domesticRank}</p>
             <p><strong>Branch:</strong> ${data['BRANCH']}</p>
             <p><strong>Outstanding:</strong> ${outstanding}</p>
         `);
