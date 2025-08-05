@@ -7,6 +7,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalDetails = document.getElementById('modal-details');
     const closeBtn = document.querySelector('.close-btn');
 
+    // New elements for search functionality
+    const searchFilterSection = document.querySelector('.search-filter-section');
+    const toggleSearchBtn = document.getElementById('toggle-search-btn');
+    const companyFilter = document.getElementById('company-filter');
+    const staffSearchInput = document.getElementById('staff-search');
+    const autocompleteList = document.getElementById('autocomplete-list');
+
     let allData = [];
     const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTlys14AiGHJNcXDBF-7tgiPZhIPN4Kl90Ml5ua9QMivwQz0_8ykgI-jo8fB3c9TZnUrMjF2Xfa3FO5/pub?gid=439106858&single=true&output=csv';
 
@@ -261,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="detail-box">
                         <h4 data-tooltip="The Business and Fresh customer targets for the domestic trip contest.">Target</h4>
                         <p>Business: ${getFormattedValue(domesticTripContestTarget)}</p>
-                        <p>Fresh Customers: ${getFormattedValue(domesticTripFreshCustomerTarget)}</p>
+                        <p>Fresh Customers: ${getFormattedValue(domesticTripFreshCustomerAchievement)}</p>
                     </div>
                     <div class="detail-box">
                         <h4 data-tooltip="The Business and Fresh customer figures achieved for the domestic trip contest.">Achievement</h4>
@@ -298,13 +305,94 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // New functions for search and filter logic
+    function populateCompanyFilter(data) {
+        const companyNames = [...new Set(data.map(item => item['COMPANY NAME']))];
+        companyNames.sort();
+        companyNames.forEach(company => {
+            const option = document.createElement('option');
+            option.value = company;
+            option.textContent = getShortCompanyName(company);
+            companyFilter.appendChild(option);
+        });
+    }
+
+    function filterAndRender() {
+        const selectedCompany = companyFilter.value;
+        const searchTerm = staffSearchInput.value.toLowerCase();
+        
+        let filteredData = allData;
+        
+        if (selectedCompany) {
+            filteredData = filteredData.filter(item => item['COMPANY NAME'] === selectedCompany);
+        }
+
+        if (searchTerm) {
+            filteredData = filteredData.filter(item => item['STAFF NAME'].toLowerCase().includes(searchTerm));
+        }
+
+        const sortedData = sortData(filteredData);
+        
+        // Show/hide sections based on filtered results
+        if (sortedData.length > 0) {
+            const topPerformers = sortedData.slice(0, 3);
+            const remainingPerformers = sortedData.slice(3);
+            createPodium(topPerformers);
+            createLeaderboard(remainingPerformers);
+        } else {
+            podiumSection.style.display = 'none';
+            leaderboardSection.style.display = 'none';
+        }
+    }
+
+    // Event listeners for search functionality
+    toggleSearchBtn.addEventListener('click', () => {
+        searchFilterSection.classList.toggle('collapsed');
+        toggleSearchBtn.classList.toggle('active');
+    });
+
+    companyFilter.addEventListener('change', () => {
+        staffSearchInput.value = '';
+        autocompleteList.innerHTML = '';
+        filterAndRender();
+    });
+
+    staffSearchInput.addEventListener('input', (event) => {
+        const searchTerm = event.target.value.toLowerCase();
+        let filteredStaffNames = allData.filter(item => {
+            const companyMatch = companyFilter.value ? item['COMPANY NAME'] === companyFilter.value : true;
+            return companyMatch && item['STAFF NAME'].toLowerCase().includes(searchTerm);
+        }).map(item => item['STAFF NAME']);
+
+        filteredStaffNames = [...new Set(filteredStaffNames)].sort();
+
+        autocompleteList.innerHTML = '';
+        if (searchTerm && filteredStaffNames.length > 0) {
+            filteredStaffNames.forEach(name => {
+                const listItem = document.createElement('li');
+                listItem.textContent = name;
+                listItem.addEventListener('click', () => {
+                    staffSearchInput.value = name;
+                    autocompleteList.innerHTML = '';
+                    filterAndRender();
+                });
+                autocompleteList.appendChild(listItem);
+            });
+        }
+        filterAndRender();
+    });
+
+    // Hide autocomplete list when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!staffSearchInput.contains(event.target) && !autocompleteList.contains(event.target)) {
+            autocompleteList.innerHTML = '';
+        }
+    });
+
     fetchData(csvUrl).then(data => {
         allData = data.filter(item => getNumericValue(item['Domestic Trip contest target']) > 0 || getNumericValue(item['Foreign trip contest Target']) > 0);
-        const sortedData = sortData(allData);
-        const topPerformers = sortedData.slice(0, 3);
-        const remainingPerformers = sortedData.slice(3, 25);
-        createPodium(topPerformers);
-        createLeaderboard(remainingPerformers);
+        populateCompanyFilter(allData);
+        filterAndRender();
         loadingIndicator.style.display = 'none';
     });
 });
