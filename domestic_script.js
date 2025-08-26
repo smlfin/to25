@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const autocompleteList = document.getElementById('autocomplete-list');
 
     let allData = [];
-    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTlys14AiGHJNcXDBF-7tgiPZhIPN4Kl90Ml5ua9QMivwQz0_8ykgI-jo8fB3c9TZnUrMjF2Xfa3FO5/pub?gid=439106858&single=true&output=csv';
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/1_txBXoDUULQramEuC0Ibyhf1Tq2scUrSTRPLA4Z0IQU/export?format=csv&gid=439106858';
 
     async function fetchData(url) {
         try {
@@ -396,3 +396,4 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingIndicator.style.display = 'none';
     });
 });
+
