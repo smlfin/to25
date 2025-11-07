@@ -1,0 +1,199 @@
+/* Color variables inherited from main theme for consistency */
+:root {
+    --bg-color: #1a1a2e;
+    --card-bg-color: #2b2b4d;
+    --text-color: #e0e0e0;
+    --gold: #FFD700;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --accent-color: #FF5733; 
+    --full-achiever-color: #00BFFF; /* Bright blue for top priority achievers */
+}
+
+/* Base Styles (unchanged) */
+body.position-dynamic-bg {
+    background-image: linear-gradient(rgba(26, 26, 46, 0.8), rgba(26, 26, 46, 0.8)), url('https://www.transparenttextures.com/patterns/stardust.png');
+    background-size: cover;
+    background-position: center;
+    color: var(--text-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    text-align: center;
+    padding: 2rem;
+    border-bottom: 1px solid #444;
+}
+
+.page-title {
+    font-size: 2.5em;
+    color: var(--gold);
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    margin-bottom: 0.5rem;
+}
+
+.tagline {
+    font-size: 1.2em;
+    color: #ccc;
+}
+
+#loading-indicator {
+    text-align: center;
+    font-size: 1.5rem;
+    color: var(--accent-color);
+    padding: 5rem 0;
+}
+
+/* Report Container and Section Styles (unchanged) */
+.report-container {
+    max-width: 1600px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.report-header {
+    text-align: center;
+    color: var(--text-color);
+    padding: 15px 0;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    border-bottom: 3px solid var(--accent-color);
+    font-size: 1.6em;
+    font-weight: 700;
+}
+
+.international-glow {
+    text-shadow: 0 0 10px #00BFFF; 
+    border-color: #00BFFF !important;
+}
+
+.domestic-glow {
+    text-shadow: 0 0 10px var(--gold); 
+    border-color: var(--gold) !important;
+}
+
+/* Table Style for Desktop/Tablet */
+.report-table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.report-table th, .report-table td {
+    padding: 12px 10px;
+    text-align: left;
+    border: 1px solid #444;
+    vertical-align: middle;
+}
+
+.report-table th {
+    background-color: var(--card-bg-color);
+    color: var(--accent-color);
+    font-size: 1em;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: sticky; 
+    top: 0;
+    z-index: 10;
+}
+
+/* Alternating row colors */
+.report-table tbody tr:nth-child(even) { background-color: #24243b; }
+.report-table tbody tr:nth-child(odd) { background-color: #1e1e35; }
+.report-table tbody tr:hover { background-color: #3b3b64; cursor: default; }
+
+/* Styling for specific columns */
+.rank-cell { text-align: center !important; font-weight: bold; color: var(--gold); font-size: 1.2em; width: 40px; }
+.full-achiever-rank { 
+    color: var(--full-achiever-color) !important;
+    font-size: 1.4em !important;
+    text-shadow: 0 0 5px var(--full-achiever-color);
+}
+.name-cell { font-weight: bold; min-width: 120px; }
+.perc-cell { text-align: right !important; font-weight: bold; font-size: 1.1em; width: 70px; }
+.target-cell { text-align: right !important; color: #a0a0a0; }
+.achiev-cell { text-align: right !important; }
+.seats-cell { text-align: center !important; font-weight: 900; font-size: 1.4em; color: var(--success-color); background-color: rgba(40, 167, 69, 0.1); width: 60px; }
+.remark-cell { font-style: italic; font-size: 0.9em; max-width: 200px; }
+
+/* Highlighting based on achievement */
+.achiev-cell.shortfall { color: var(--danger-color); font-weight: bold; }
+.achiev-cell.achieved { color: var(--success-color); font-weight: bold; }
+
+
+/* 💥 MOBILE RESPONSIVE STYLES (Stacking) 💥 */
+@media screen and (max-width: 850px) {
+    /* Hide the horizontal scroll wrapper that was present in the last version */
+    .table-scroll-wrapper { overflow-x: visible; }
+
+    .report-table thead {
+        display: none; /* Hide header on small screens */
+    }
+
+    .report-table, .report-table tbody, .report-table tr, .report-table td {
+        display: block;
+        width: 100%;
+        box-sizing: border-box; 
+    }
+    
+    .report-table tr {
+        margin-bottom: 15px;
+        border: 1px solid #555;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .report-table td {
+        text-align: right !important;
+        border: none;
+        border-bottom: 1px solid #3b3b64; /* Lighter separator */
+        position: relative;
+        padding-left: 50%;
+        white-space: normal; /* Allow text wrapping */
+    }
+    
+    .report-table td:last-child {
+        border-bottom: none;
+    }
+
+    /* Data Labeling for Mobile */
+    .report-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 45%;
+        padding-left: 10px;
+        font-weight: bold;
+        text-align: left;
+        color: var(--accent-color);
+        white-space: nowrap; 
+    }
+
+    /* Rank cell special styling for mobile */
+    .rank-cell {
+        background-color: #3b3b64; 
+        color: var(--gold) !important;
+        text-align: center !important;
+        padding: 10px;
+        font-size: 1.5em;
+        border-radius: 8px 8px 0 0;
+        display: block; /* Force to take full width */
+        width: 100% !important;
+    }
+    
+    /* Mobile-only Rank Label */
+    .rank-cell::before {
+        content: "Rank";
+        position: static;
+        display: block;
+        color: #fff;
+        font-size: 0.7em;
+        font-weight: normal;
+        margin-bottom: 5px;
+    }
+}
