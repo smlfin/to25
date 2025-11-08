@@ -17,12 +17,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Helper Functions ---
     function getNumericValue(value) {
         if (!value) return 0;
-        // Robust cleaning for currency/string columns
-        return parseFloat(String(value).replace(/[^0-9.]/g, "") || 0);
+        // CRITICAL FIX: Ensure negative sign '-' is NOT removed, allowing for negative numbers
+        return parseFloat(String(value).replace(/[^0-9.\-]/g, "") || 0);
     }
 
     function getFormattedValue(value) {
-        // Use Indian numbering system for currency
         const num = getNumericValue(value);
         return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(num);
     }
@@ -42,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function parseCSV(csvText) {
-        // Simplified parsing logic for robustness
         const lines = csvText.trim().split(/\r?\n/);
         if (lines.length < 1) return [];
         const headers = lines[0].split(',').map(h => h.trim());
@@ -52,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const values = [];
             let inQuotes = false;
             let start = 0;
-            // Simple approach to handle quoted fields in CSV
             for (let j = 0; j < line.length; j++) {
                 if (line[j] === '"') { inQuotes = !inQuotes; } 
                 else if (line[j] === ',' && !inQuotes) {
@@ -92,7 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const businessTarget = getNumericValue(user[businessTargetKey]);
         const businessAchievement = getNumericValue(user[CONTEST_ACHIEVEMENT_KEY]);
         const freshCustomerTarget = getNumericValue(user[freshTargetKey]);
-        // Use getNumericValue for fresh customer achievement too, in case it's stored as a string sometimes
         const freshCustomerAchievement = getNumericValue(user[FRESH_CUSTOMER_ACH_KEY]); 
 
         let seats = 0;
@@ -103,7 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const isFreshCustAchieved = freshCustomerAchievement >= freshCustomerTarget;
         const isFullAchiever = isBusinessAchieved && isFreshCustAchieved;
 
-        // ... (Seats and Remark logic remains the same) ...
         if (isBusinessAchieved) {
             seats = 1; 
             const surplus = businessAchievement - businessTarget;
@@ -140,32 +135,32 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // --- Main Ranking Function (CRITICAL FIX) ---
+    // --- Main Ranking Function (CRITICAL FIX APPLIED) ---
     const processContestData = (contestType) => {
         const businessTargetKey = contestType === 'domestic' ? DOM_BUSINESS_TARGET_KEY : INT_BUSINESS_TARGET_KEY;
         
-        let allPerformers = allData.filter(item => getNumericValue(item[businessTargetKey]) > 0);
+        // 1. Filter: Target > 0 AND Achievement % > 0 (Excludes negative achievers like NEELAKANTAN S)
+        let eligiblePerformers = allData.filter(item => getNumericValue(item[businessTargetKey]) > 0);
         
-        // 1. Calculate status for all eligible performers
-        const performersWithStatus = allPerformers.map(user => {
+        // 2. Calculate status for all eligible performers
+        const performersWithStatus = eligiblePerformers.map(user => {
             return {
                 ...user,
                 status: calculateSeatsAndRemark(user, contestType)
             };
-        });
-
-        // 2. Separate into two lists
+        }).filter(p => p.status.percentage > 0); // Exclude 0% and negative achievers after calculation
+        
+        // 3. Separate into two lists
         let fullAchievers = performersWithStatus.filter(p => p.status.isFullAchiever);
         let remainingPerformers = performersWithStatus.filter(p => !p.status.isFullAchiever);
         
-        // 3. Sort each list individually by Percentage (Descending)
-        // This ensures stability and correct ranking within each group
+        // 4. Sort each list individually by Percentage (Descending)
         const percentageSort = (pA, pB) => pB.status.percentage - pA.status.percentage;
 
         fullAchievers.sort(percentageSort);
         remainingPerformers.sort(percentageSort);
         
-        // 4. Combine and Limit
+        // 5. Combine and Limit (Full Achievers first, then remaining)
         let finalList = fullAchievers.concat(remainingPerformers);
         
         // Final list is capped at 25
@@ -188,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
         targetElement.innerHTML = ''; 
 
         if (performers.length === 0) {
-            targetElement.innerHTML = '<p class="tagline" style="text-align:center; padding: 20px;">No performers currently meet the target criteria for display.</p>';
+            targetElement.innerHTML = '<p class="tagline" style="text-align:center; padding: 20px;">No performers currently meet the target criteria for display (Target > 0 and Achievement > 0).</p>';
             return;
         }
 
@@ -220,11 +215,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const { seats, remark, businessTarget, freshCustomerTarget, businessAchievement, freshCustomerAchievement, isBusinessAchieved } = status;
             const shortCompanyName = getShortCompanyName(user['COMPANY NAME']);
             
+            // Highlight achievements: Green for achieved, Red for shortfall
             const achievementClass = isBusinessAchieved ? 'achieved' : 'shortfall';
             const percentage = status.percentage * 100;
 
             const isFreshCustAchieved = freshCustomerAchievement >= freshCustomerTarget;
-            // Ensure freshCustClass is applied only if a target exists
             const freshCustClass = freshCustomerTarget > 0 ? (isFreshCustAchieved ? 'achieved' : 'shortfall') : '';
 
             const rankCellClass = status.isFullAchiever ? 'rank-cell full-achiever-rank' : 'rank-cell';
