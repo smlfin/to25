@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Contest Position</title>
+    <link rel="stylesheet" href="personal_search_style.css">
+    
+</head>
+<body class="search-theme">
+    <header>
+        <h1 class="page-title">🔍 Find Your Contest Position</h1>
+        <p class="tagline">Enter your full staff name to view your status.</p>
+    </header>
+
+    <div class="search-container">
+        <div class="autocomplete-wrapper">
+            <input type="text" id="staffNameInput" placeholder="Start typing Staff Name..." autocomplete="off">
+            <div id="nameSuggestions" class="suggestions-dropdown">
+                </div>
+        </div>
+        <button id="searchButton">Search</button>
+    </div>
+
+    <div id="loading-indicator" class="loading-indicator">Loading Data...</div>
+
+    <div id="result-container" class="result-container" style="display:none;">
+        <div id="personal-report-card">
+            <p class="initial-message">Search for your name to see your detailed report.</p>
+        </div>
+    </div>
+
+    <script src="top_25.js"></script>
+    <script src="personal_search.js"></script>
+</body>
+</html>

@@ -1,0 +1,489 @@
+/* General Setup and Theme */
+body.search-theme {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f0f4f8 0%, #e0e7ee 100%);
+    color: #333;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.page-title {
+    color: #004a99;
+    font-size: 2.5em;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.tagline {
+    color: #555;
+    font-size: 1.1em;
+}
+
+/* Search Bar Styling */
+.search-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; 
+    margin-bottom: 40px;
+    gap: 10px;
+}
+
+.autocomplete-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+#staffNameInput {
+    padding: 12px 20px;
+    width: 350px;
+    max-width: 80%;
+    border: 2px solid #004a99;
+    border-radius: 25px;
+    font-size: 1.05em;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
+}
+
+#staffNameInput:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.2);
+    outline: none;
+}
+
+#searchButton {
+    padding: 12px 30px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 1.05em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+    min-width: 100px;
+}
+
+#searchButton:hover {
+    background-color: #0056b3;
+}
+
+#searchButton:active {
+    transform: scale(0.98);
+}
+
+/* Autocomplete Dropdown Styles */
+.suggestions-dropdown {
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #ddd;
+    border-top: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    display: none; 
+}
+
+.suggestion-item {
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1em;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover, .suggestion-item.active {
+    background-color: #f0f4f8; 
+    font-weight: 600;
+    color: #004a99;
+}
+
+#staffNameInput.suggestions-open {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-color: transparent;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.2);
+}
+
+/* Loading and Result Container */
+.loading-indicator {
+    text-align: center;
+    font-size: 1.2em;
+    color: #004a99;
+    padding: 20px;
+    font-style: italic;
+}
+
+.result-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* Personal Report Card */
+#personal-report-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    transition: all 0.5s ease-in-out;
+}
+
+.initial-message, .error-message {
+    text-align: center;
+    padding: 50px;
+    font-size: 1.2em;
+    color: #6c757d;
+}
+
+.error-message {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+.personal-card-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.personal-card-header h2 {
+    color: #004a99;
+    font-size: 2em;
+    margin-bottom: 5px;
+}
+
+.company-info {
+    color: #6c757d;
+    font-style: italic;
+    margin-bottom: 15px;
+}
+
+.separator {
+    height: 3px;
+    width: 60px;
+    background-color: #ffc107;
+    margin: 0px auto 20px auto;
+    border-radius: 2px;
+}
+
+/* Contest Sections */
+.report-content {
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.contest-section {
+    flex: 1 1 45%; 
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    min-width: 300px;
+    transition: all 0.3s ease;
+}
+
+/* Winner Highlight Style */
+.winner-highlight {
+    background-color: #e6ffe6; 
+    border-left: 8px solid #00c853 !important; 
+    transform: scale(1.01);
+    box-shadow: 0 6px 20px rgba(0, 200, 83, 0.15);
+}
+
+
+.international {
+    border: 1px solid #007bff;
+    background-color: #f7fcff;
+}
+
+.domestic {
+    border: 1px solid #28a745;
+    background-color: #f8fff7;
+}
+
+.contest-section h3 {
+    font-size: 1.5em;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+/* Status Highlighting */
+.achieved {
+    border-left: 5px solid #28a745; 
+}
+
+.shortfall {
+    border-left: 5px solid #dc3545; 
+}
+
+.warning {
+     border-left: 5px solid #ffc107; 
+}
+
+.not-targeted-message {
+    color: #6c757d;
+    font-style: italic;
+    text-align: center;
+    padding: 10px 0;
+}
+
+/* Progress Bar */
+.progress-bar-container {
+    background-color: #e9ecef;
+    border-radius: 10px;
+    height: 25px;
+    margin-bottom: 25px;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #007bff;
+    border-radius: 10px;
+    transition: width 1s ease-out;
+}
+
+.international .progress-bar { background-color: #007bff; }
+.domestic .progress-bar { background-color: #28a745; }
+
+.progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    white-space: nowrap;
+}
+
+/* Status Grid */
+.status-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px; /* Reduced margin */
+    border-top: 1px dashed #ccc;
+    padding-top: 15px;
+}
+
+.grid-item {
+    padding: 5px;
+}
+
+.grid-item.full-width {
+    grid-column: 1 / 3;
+    text-align: center;
+    padding: 10px;
+    background-color: rgba(255, 193, 7, 0.1);
+    border-radius: 5px;
+}
+
+.label {
+    display: block;
+    font-size: 0.9em;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.value {
+    display: block;
+    font-size: 1.1em;
+    font-weight: bold;
+    word-break: break-word; 
+}
+
+.target { color: #dc3545; }
+.achievement { color: #28a745; }
+
+.seat-label {
+    font-size: 1.1em;
+    color: #004a99;
+}
+
+.seat-value {
+    font-size: 1.8em;
+    color: #ffc107;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* NEW: Prominent Remark Highlight Box */
+.remark-highlight-box {
+    padding: 12px;
+    margin-top: 25px;
+    background-color: #fff3cd; /* Light warning yellow */
+    border: 2px solid #ffc107; /* Stronger gold border */
+    border-radius: 8px;
+    font-size: 1.05em;
+    font-weight: 500;
+    color: #6a4900; /* Dark text for readability on yellow */
+    line-height: 1.4;
+    transition: all 0.3s;
+}
+
+.remark-highlight-box strong {
+    display: block; 
+    font-size: 1.1em;
+    margin-bottom: 5px;
+    color: #333; 
+    font-weight: 700;
+}
+
+.disclaimer {
+    text-align: center;
+    font-size: 0.85em;
+    color: #999;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f0;
+}
+
+/* ========================================================= */
+/* 📱 MOBILE RESPONSIVENESS (Max-width: 768px) */
+/* ========================================================= */
+@media (max-width: 768px) {
+    body.search-theme {
+        padding: 10px;
+    }
+
+    .page-title {
+        font-size: 1.8em;
+    }
+    
+    .tagline {
+        font-size: 1em;
+    }
+
+    /* Stack Search Input and Button */
+    .search-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .autocomplete-wrapper {
+        width: 90%;
+        max-width: 400px;
+    }
+
+    #staffNameInput {
+        width: 100%;
+        max-width: none;
+        box-sizing: border-box; 
+        border-radius: 25px !important; 
+    }
+    
+    #searchButton {
+        width: 90%;
+        max-width: 400px;
+        box-sizing: border-box;
+    }
+
+    .suggestions-dropdown {
+        left: 0;
+        right: 0;
+        width: 100%;
+    }
+
+    /* Report Card & Content */
+    #personal-report-card {
+        padding: 20px 15px;
+        border-radius: 10px;
+    }
+
+    .personal-card-header h2 {
+        font-size: 1.5em;
+    }
+
+    /* Stack contest sections vertically */
+    .report-content {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .contest-section {
+        flex: 1 1 100%;
+        min-width: unset;
+        padding: 15px;
+    }
+    
+    .contest-section h3 {
+        font-size: 1.3em;
+        margin-bottom: 15px;
+    }
+
+    /* Status Grid Layout for Mobile View */
+    .status-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto auto auto;
+        gap: 10px;
+    }
+    
+    /* 1. Business Target and Achievement on same line */
+    .grid-item:nth-child(1) { order: 1; display: flex; justify-content: space-between; align-items: center;}
+    .grid-item:nth-child(2) { order: 1; display: flex; justify-content: space-between; align-items: center;}
+    .grid-item:nth-child(1) .label, .grid-item:nth-child(2) .label,
+    .grid-item:nth-child(1) .value, .grid-item:nth-child(2) .value {
+        display: inline;
+    }
+
+    /* 2. Fresh Customer Target and Achievement on same line */
+    .grid-item:nth-child(3) { order: 2; display: flex; justify-content: space-between; align-items: center; }
+    .grid-item:nth-child(4) { order: 2; display: flex; justify-content: space-between; align-items: center; }
+    .grid-item:nth-child(3) .label, .grid-item:nth-child(4) .label,
+    .grid-item:nth-child(3) .value, .grid-item:nth-child(4) .value {
+        display: inline;
+    }
+
+    /* 3. Seat Value always last and full width */
+    .grid-item.full-width {
+        grid-column: 1 / 2;
+        order: 3;
+        padding: 8px;
+    }
+
+    .value, .seat-value {
+        font-size: 1em;
+    }
+
+    .seat-value {
+        font-size: 1.4em;
+    }
+
+    .progress-bar-container {
+        height: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .remark-highlight-box {
+        margin-top: 20px;
+    }
+}
+/* Additional specific adjustments for very small screens (e.g., iPhone SE) */
+@media (max-width: 400px) {
+    body.search-theme {
+        padding: 5px;
+    }
+    
+    .page-title {
+        font-size: 1.5em;
+    }
+}
