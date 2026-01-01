@@ -175,7 +175,7 @@ const processContestData = (contestType) => {
         
         let finalList = fullAchievers.concat(remainingPerformers);
         
-        finalList = finalList.slice(0, 25); 
+        finalList = finalList.slice(0, 30); 
 
         console.log(`--- Top 30 Performers for ${contestType.toUpperCase()} (For Debugging) ---`);
         finalList.slice(0, 30).forEach((p, index) => {
@@ -288,3 +288,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
